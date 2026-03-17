@@ -1,0 +1,65 @@
+{
+  "projectType": "frontend",
+  "projectName": "Gregori Jimenez - Developer Portfolio",
+  "projectDescription": "A personal developer portfolio showcasing skills and projects in C# .NET, SQL Server, and JavaScript, built as a single-page interactive web application.",
+  "theme": "willow",
+  "primaryColor": "#00d4ff",
+  "lightColor": "#00ff9d",
+  "darkColor": "#050a0e",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Portfolio",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["introduction", "about"]
+          },
+          {
+            "group": "Skills & Stack",
+            "pages": ["skills/csharp-dotnet", "skills/sql-server", "skills/javascript"]
+          },
+          {
+            "group": "Projects",
+            "pages": ["projects/overview", "projects/adding-projects", "projects/filtering"]
+          },
+          {
+            "group": "Contact",
+            "pages": ["contact"]
+          }
+        ]
+      },
+      {
+        "tab": "Developer Guide",
+        "groups": [
+          {
+            "group": "Setup",
+            "pages": ["dev/getting-started", "dev/customization"]
+          },
+          {
+            "group": "Features",
+            "pages": ["dev/theme-toggle", "dev/project-management", "dev/animations"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Dark/light theme toggle with localStorage persistence",
+    "Interactive terminal animation in hero section",
+    "Animated skill progress bars with Intersection Observer",
+    "Dynamic project cards with add and filter functionality",
+    "Fade-in scroll animations using IntersectionObserver API",
+    "Fully responsive layout for mobile and desktop",
+    "Contact form modal with project submission",
+    "C# .NET, SQL Server, and JavaScript skills showcase"
+  ],
+  "publicApiSurface": [
+    "openModal() — opens the add project modal",
+    "closeModal() — closes the add project modal",
+    "addProject() — reads form inputs and appends a new project card to the grid",
+    "setTheme(mode) — applies 'light' or 'dark' theme to the body",
+    "filter-btn[data-filter] — filters project cards by category (all, backend, frontend, fullstack)",
+    "IntersectionObserver — drives fade-in animations and skill bar animations"
+  ]
+}
