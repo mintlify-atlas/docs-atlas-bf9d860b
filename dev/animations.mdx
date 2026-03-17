@@ -1,0 +1,107 @@
+---
+title: "Animations"
+description: "Scroll-triggered fade-in animations and skill bar fills using IntersectionObserver."
+---
+
+All scroll-driven animations use the [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) API. There are two observers: one for general fade-in effects and one specifically for the skill bar fill animation.
+
+<Note>
+  `IntersectionObserver` is supported in all modern browsers. It is not available in Internet Explorer. No polyfill is included in this portfolio.
+</Note>
+
+## Fade-in observer
+
+The `obs` observer watches every element with the `.fade-in` class. When an element crosses the 10% threshold, it receives the `.visible` class after a staggered delay based on its index in the batch of intersecting entries.
+
+```javascript
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+```
+
+Each subsequent element in a batch is delayed by an additional 80 ms, creating a staggered cascade effect when multiple elements enter the viewport at once.
+
+## Skill bar observer
+
+The `skillObs` observer targets the `#skills` section. When it becomes 20% visible, a 200 ms delay fires and each `.skill-bar` inside the section has its width set to the value stored in its `data-w` attribute. The observer then unregisters itself so the animation only runs once.
+
+```javascript
+const skillObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+        const w = bar.dataset.w;
+        setTimeout(() => { bar.style.width = w; }, 200);
+      });
+      skillObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('#skills').forEach(el => skillObs.observe(el));
+```
+
+## CSS
+
+### `.fade-in` and `.visible`
+
+Elements start invisible and shifted down 20px. Adding `.visible` transitions them to full opacity and their natural position.
+
+```css
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+### `.skill-bar`
+
+Skill bars start at `width: 0%` and animate to the target width over 1.2 seconds when the inline `style.width` is set by the observer.
+
+```css
+.skill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 1.2s ease;
+  width: 0%;
+}
+```
+
+The target width is stored as a `data-w` attribute on each bar:
+
+```html
+<div class="skill-bar-wrap">
+  <div class="skill-bar" data-w="98%"></div>
+</div>
+```
+
+## Adding new animated elements
+
+To add the scroll fade-in to any element, give it the `.fade-in` class. The existing observer picks it up automatically — no JavaScript changes are needed.
+
+```html
+<div class="fade-in">
+  <!-- your content -->
+</div>
+```
+
+<Note>
+  Elements with `.fade-in` that are already in the viewport when the page loads will animate in immediately because the observer fires on the initial intersection check.
+</Note>
+
+## Adding a new skill bar
+
+To add a new animated skill bar, set `data-w` to the desired fill percentage. The `skillObs` observer will apply it when the `#skills` section scrolls into view.
+
+```html
+<div class="skill-bar-wrap">
+  <div class="skill-bar" data-w="85%"></div>
+</div>
+```

@@ -1,0 +1,88 @@
+---
+title: "C# / .NET"
+description: "Gregori's primary skill — backend development, RESTful APIs, ASP.NET Core, and clean architecture."
+---
+
+<Note>
+  Proficiency: **98%** — C# / .NET is Gregori's strongest and most-used technology, applied across backend services, enterprise applications, and API development.
+</Note>
+
+Desarrollo backend, APIs RESTful, ASP.NET Core, arquitecturas limpias y aplicaciones empresariales de alto rendimiento.
+
+Gregori builds server-side systems using C# and the .NET ecosystem. His work spans RESTful API design with ASP.NET Core, layered and clean architecture patterns, and high-performance enterprise applications that are maintainable and well-structured.
+
+## Core capabilities
+
+<Columns cols={2}>
+  <Card title="ASP.NET Core APIs" icon="server">
+    Designing and building RESTful APIs with controllers, routing, middleware, dependency injection, and proper HTTP semantics.
+  </Card>
+  <Card title="Clean architecture" icon="layers">
+    Structuring projects with separation of concerns — domain, application, infrastructure, and presentation layers kept independent.
+  </Card>
+  <Card title="Enterprise applications" icon="building">
+    High-performance backend systems built for reliability, scalability, and long-term maintainability in production environments.
+  </Card>
+  <Card title="Dependency injection" icon="plug">
+    Leveraging the built-in .NET DI container to write testable, loosely coupled components across the entire application.
+  </Card>
+</Columns>
+
+## Example: ASP.NET Core controller
+
+The following shows a typical pattern Gregori uses for a RESTful controller with clean separation between the HTTP layer and the service layer.
+
+```csharp ProductsController.cs
+using Microsoft.AspNetCore.Mvc;
+
+namespace MyApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    private readonly IProductService _productService;
+
+    public ProductsController(IProductService productService)
+    {
+        _productService = productService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var products = await _productService.GetAllAsync();
+        return Ok(products);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var product = await _productService.GetByIdAsync(id);
+        if (product is null) return NotFound();
+        return Ok(product);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
+    {
+        var created = await _productService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+}
+```
+
+<Tip>
+  Injecting `IProductService` rather than a concrete implementation keeps the controller decoupled from data-access logic, making the code easier to test and extend.
+</Tip>
+
+## Architectural approach
+
+Gregori applies clean architecture principles to keep business logic independent from framework and infrastructure concerns:
+
+- **Domain layer** — entities, value objects, and business rules with no external dependencies
+- **Application layer** — use cases and service interfaces that orchestrate domain logic
+- **Infrastructure layer** — EF Core, repositories, external integrations, and other I/O concerns
+- **Presentation layer** — ASP.NET Core controllers and middleware that handle HTTP
+
+This separation ensures that changes to the database, ORM, or delivery mechanism do not ripple through the entire codebase.

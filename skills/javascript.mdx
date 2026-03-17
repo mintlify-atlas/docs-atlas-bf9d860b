@@ -1,0 +1,142 @@
+---
+title: "JavaScript"
+description: "Interactive frontend development, DOM manipulation, API consumption, and modern client-side logic."
+---
+
+<Note>
+  Proficiency: **90%** — JavaScript is Gregori's frontend technology, used to build interactive UIs, manage state, animate elements, and consume APIs from the browser.
+</Note>
+
+Desarrollo frontend interactivo, manipulación del DOM, consumo de APIs y lógica del lado del cliente con código moderno.
+
+Gregori writes modern JavaScript to create responsive, interactive interfaces. His work includes DOM manipulation, event-driven logic, dynamic content rendering, and integration with third-party APIs — all written without framework overhead when native browser APIs are sufficient.
+
+## Core capabilities
+
+<Columns cols={2}>
+  <Card title="DOM manipulation" icon="mouse-pointer">
+    Dynamically creating, updating, and removing elements in response to user actions, keeping the UI in sync with application state.
+  </Card>
+  <Card title="API consumption" icon="globe">
+    Fetching data from REST endpoints using `fetch`, handling async flows with `async/await`, and gracefully managing loading and error states.
+  </Card>
+  <Card title="Event-driven logic" icon="zap">
+    Attaching event listeners, delegating events efficiently, and building interactive features like modals, filters, and toggles.
+  </Card>
+  <Card title="Intersection Observer" icon="eye">
+    Using the browser's `IntersectionObserver` API for scroll-triggered animations and lazy-loading without scroll event listeners.
+  </Card>
+</Columns>
+
+## Example: scroll-triggered animations with IntersectionObserver
+
+The following code is taken directly from Gregori's portfolio. It uses `IntersectionObserver` to add a `visible` class to elements as they scroll into view, staggering the animation with a small delay per element.
+
+```javascript scroll-animations.js
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+```
+
+<Tip>
+  Using `IntersectionObserver` instead of a `scroll` event listener is significantly more performant — the browser handles intersection detection off the main thread, avoiding layout thrashing on every scroll tick.
+</Tip>
+
+## Example: dynamic card rendering
+
+This `addProject` function from the portfolio creates and appends a project card to the DOM at runtime, demonstrating dynamic HTML generation, input sanitization, and state management without a framework.
+
+```javascript add-project.js
+function esc(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function addProject() {
+  const title   = document.getElementById('p-title').value.trim();
+  const desc    = document.getElementById('p-desc').value.trim();
+  const tagsRaw = document.getElementById('p-tags').value.trim();
+  const cat     = document.getElementById('p-cat').value;
+  const url     = document.getElementById('p-url').value.trim();
+
+  if (!title || !desc) {
+    alert('El título y la descripción son obligatorios.');
+    return;
+  }
+
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  const num  = projects.length + 1;
+
+  const card = document.createElement('div');
+  card.className = 'project-card fade-in';
+  card.dataset.category = cat;
+  card.innerHTML =
+    '<div class="project-number">// ' + String(num).padStart(2, '0') + '</div>' +
+    '<div class="project-title">'  + esc(title) + '</div>' +
+    '<div class="project-desc">'   + esc(desc)  + '</div>' +
+    (tags.length
+      ? '<div class="project-tags">' +
+          tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') +
+        '</div>'
+      : '') +
+    (url
+      ? '<div class="project-links"><a href="' + esc(url) +
+          '" class="project-link" target="_blank" rel="noopener">Ver proyecto &rarr;</a></div>'
+      : '');
+
+  document.getElementById('projects-grid').appendChild(card);
+
+  // Trigger CSS transition on the next paint
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => card.classList.add('visible'))
+  );
+
+  projects.push({ title, desc, tags, cat, url });
+  updateCounter();
+  ['p-title', 'p-desc', 'p-tags', 'p-url'].forEach(
+    id => (document.getElementById(id).value = '')
+  );
+  closeModal();
+}
+```
+
+<Note>
+  The double `requestAnimationFrame` call ensures the browser has performed at least one layout pass before adding the `visible` class, guaranteeing the CSS transition fires instead of the element appearing instantly at its final state.
+</Note>
+
+## Example: theme toggle with localStorage
+
+Gregori's portfolio persists the user's light/dark preference across page loads using `localStorage`.
+
+```javascript theme-toggle.js
+const THEME_KEY = 'portfolio-theme';
+
+function setTheme(mode) {
+  if (mode === 'light') {
+    document.body.classList.add('light-theme');
+    themeToggle.textContent = '🌙 Dark';
+  } else {
+    document.body.classList.remove('light-theme');
+    themeToggle.textContent = '☀ Light';
+  }
+}
+
+// Restore saved preference on load
+const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+setTheme(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const next = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+  setTheme(next);
+  localStorage.setItem(THEME_KEY, next);
+});
+```

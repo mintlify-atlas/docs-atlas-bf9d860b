@@ -1,0 +1,147 @@
+---
+title: "Customization"
+description: "Customize the portfolio's colors, content, and layout to make it your own."
+---
+
+All customization happens directly inside `index.html`. The file uses CSS custom properties (variables) defined in `:root` for theming, and a `body.light-theme` class for the light mode overrides. Personal information is scattered across a few well-marked HTML sections.
+
+<CardGroup cols={3}>
+  <Card title="Colors" icon="palette">
+    CSS variables control every color in the portfolio. Change them once in `:root` and the update propagates everywhere.
+  </Card>
+  <Card title="Typography" icon="type">
+    Two font families are used: `Space Mono` for monospace elements and `Syne` for body text. Both are loaded from Google Fonts.
+  </Card>
+  <Card title="Personal info" icon="user">
+    Name, about text, contact email, and LinkedIn URL are each in a single, clearly identifiable place in the HTML.
+  </Card>
+</CardGroup>
+
+## Colors
+
+The color system is built on CSS custom properties defined in the `:root` selector. The light theme overrides those same variables on `body.light-theme`.
+
+<Tabs>
+  <Tab title="Dark theme (default)">
+    ```css
+    :root {
+      --bg: #050a0e;              /* Page background */
+      --bg2: #0a1520;             /* Card background */
+      --bg3: #0d1e2e;             /* Section background */
+      --accent: #00d4ff;          /* Primary cyan — links, highlights */
+      --accent2: #00ff9d;         /* Secondary green — hover states */
+      --text: #e8f4f8;            /* Body text */
+      --muted: #607080;           /* Secondary / placeholder text */
+      --border: rgba(0,212,255,0.15); /* Subtle borders */
+    }
+    ```
+  </Tab>
+  <Tab title="Light theme">
+    ```css
+    body.light-theme {
+      --bg: #f4f9ff;
+      --bg2: #ffffff;
+      --bg3: #edf5ff;
+      --accent: #0077ff;
+      --accent2: #00b894;
+      --text: #0f172a;
+      --muted: #4b5563;
+      --border: rgba(0, 119, 255, 0.18);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The active theme is toggled at runtime by the "Light / Dark" button in the navigation bar. The user's preference is persisted to `localStorage` under the key `portfolio-theme`.
+
+<Note>
+  The `--grid-line` and `--scan-line` variables control the subtle background texture (the grid and scanline overlays rendered via `body::before` and `body::after`). They are also overridden in `body.light-theme` but rarely need changing.
+</Note>
+
+## Typography
+
+Two font variables are defined in `:root`:
+
+```css
+:root {
+  --mono: 'Space Mono', monospace; /* Navigation, labels, code, stats */
+  --sans: 'Syne', sans-serif;      /* Body text, section titles */
+}
+```
+
+Both fonts are loaded from Google Fonts in the `<head>` of `index.html`:
+
+```html
+<link
+  href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+```
+
+To switch fonts, replace the Google Fonts URL and update `--mono` and/or `--sans` in `:root`.
+
+## Personal info
+
+The sections below show exactly where to find each piece of personal content in `index.html`.
+
+<CardGroup cols={2}>
+  <Card title="Name and nav logo" icon="id-card">
+    The navigation logo displays your initials and domain label. Find it in the `<nav>` element:
+
+    ```html
+    <div class="nav-logo">&gt;_ <span>GEJ</span>.dev</div>
+    ```
+
+    The text inside `<span>` (`GEJ`) and the suffix (`.dev`) can be changed to match your own initials or brand.
+  </Card>
+  <Card title="Hero title" icon="heading">
+    The large hero heading is split across three `<span>` elements inside `<h1 class="hero-title">`:
+
+    ```html
+    <h1 class="hero-title">
+      <span class="line1">Gregori</span>
+      <span class="line2">Evangelista</span>
+      <span class="line3">Jimenez</span>
+    </h1>
+    ```
+
+    Each line can be styled independently — `line1` uses `--text`, `line2` is outlined with `--accent`, and `line3` uses `--accent2`.
+  </Card>
+  <Card title="About text" icon="align-left">
+    The about section contains two paragraphs with class `about-text`:
+
+    ```html
+    <p class="about-text">
+      Soy desarrollador de software especializado en el
+      ecosistema Microsoft: C# con .NET para el backend...
+    </p>
+    <p class="about-text">
+      Me enfoco en escribir código limpio, mantenible...
+    </p>
+    ```
+
+    Replace the paragraph content with your own bio.
+  </Card>
+  <Card title="Contact email and LinkedIn" icon="mail">
+    Both contact links appear in the `#contact` section:
+
+    ```html
+    <!-- Email (appears twice — as display text and as mailto link) -->
+    <a href="mailto:gregorievangelista43@gmail.com">
+      gregorievangelista43@gmail.com
+    </a>
+
+    <!-- LinkedIn -->
+    <a
+      href="https://www.linkedin.com/in/gregori-evangelista-jimenez-5a077932b/"
+      target="_blank"
+      rel="noopener"
+      class="contact-link"
+    >
+      LinkedIn
+    </a>
+    ```
+
+    Update the `href` attribute and link text for both entries.
+  </Card>
+</CardGroup>

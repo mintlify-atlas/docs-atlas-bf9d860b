@@ -1,0 +1,81 @@
+---
+title: "Projects overview"
+description: "The projects section lets visitors view and add project cards filtered by category."
+---
+
+The projects section is a dynamic grid that displays project cards. It starts empty and grows as you add entries through the built-in modal form. Each card is tagged with a category so visitors can filter the grid by type.
+
+## Empty state
+
+When no projects have been added yet, the grid shows a placeholder:
+
+```
+{ }
+Aún no hay proyectos.
+Haz clic en + Añadir proyecto para construir tu portafolio.
+```
+
+The empty state disappears as soon as the first project is saved.
+
+## Project data
+
+Projects are stored in a `projects` array in JavaScript memory. The array is populated at runtime — data does not persist between page reloads.
+
+```javascript
+let projects = [];
+```
+
+Each entry pushed into the array has this shape:
+
+```javascript
+{ title, desc, tags, cat, url }
+```
+
+## Project card anatomy
+
+Every card renders the following fields:
+
+| Field | Description |
+|---|---|
+| Number | Zero-padded index, e.g. `// 01` |
+| Title | Project name |
+| Description | Short summary of what the project does |
+| Technology tags | One badge per technology, derived from the comma-separated input |
+| Category | One of `backend`, `frontend`, or `fullstack` — stored as `data-category` on the card element |
+| URL | Optional link rendered as "Ver proyecto →" |
+
+## Project categories
+
+<Columns cols={3}>
+  <Card title="Backend" icon="server">
+    Server-side projects: APIs, data layers, background services, and anything running outside the browser.
+  </Card>
+  <Card title="Frontend" icon="monitor">
+    Client-side projects: UIs, interactive components, and browser-based applications.
+  </Card>
+  <Card title="Full Stack" icon="layers">
+    Projects that combine both a backend and a frontend within the same codebase or deployment.
+  </Card>
+</Columns>
+
+## Grid layout
+
+The project grid uses CSS Grid with two columns on desktop and one column on mobile:
+
+```css
+/* Desktop */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* Mobile (max-width: 900px) */
+.projects-grid {
+  grid-template-columns: 1fr;
+}
+```
+
+<Note>
+The project count in the About section (`#proj-count`) updates automatically each time a project is added via `updateCounter()`.
+</Note>

@@ -1,0 +1,41 @@
+---
+title: "Getting started"
+description: "Set up and run the portfolio locally — no build tools or dependencies required."
+---
+
+The portfolio is a single self-contained file: `index.html` with all CSS and JavaScript embedded inline. There is no package manager, no build step, and no runtime dependencies.
+
+<Note>
+  `portfolioweb.html` is a redirect file included in the repository. It automatically redirects visitors to `index.html`.
+</Note>
+
+## Prerequisites
+
+- A modern web browser (Chrome, Firefox, Edge, or Safari)
+- [Git](https://git-scm.com/) to clone the repository
+
+## Local setup
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/GregoriEJimenezDev/MyPortofolio.Github.IO
+    ```
+  </Step>
+  <Step title="Open index.html in your browser">
+    Navigate to the cloned directory and open `index.html` directly in your browser. No server is required.
+
+    ```
+    MyPortofolio.Github.IO/
+    ├── index.html         # Main portfolio file — open this
+    └── portfolioweb.html  # Redirect to index.html
+    ```
+  </Step>
+  <Step title="Start customizing">
+    All content, styles, and logic live inside `index.html`. Open it in a text editor to update your name, colors, contact details, and more. See [Customization](/dev/customization) for a full reference.
+  </Step>
+</Steps>
+
+## Deployed site
+
+The portfolio is live via GitHub Pages at the URL associated with the repository. Pushing changes to the default branch automatically updates the deployed site — no CI pipeline or build process is needed.

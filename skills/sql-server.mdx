@@ -1,0 +1,76 @@
+---
+title: "SQL Server"
+description: "Relational database design, query optimization, stored procedures, and data modeling."
+---
+
+<Note>
+  Proficiency: **95%** — SQL Server is Gregori's primary data layer technology, used for relational database design, stored procedure development, and query optimization.
+</Note>
+
+Diseño de bases de datos relacionales, optimización de consultas, procedimientos almacenados y modelado de datos.
+
+Gregori designs and manages relational databases with Microsoft SQL Server. His focus is on sound data modeling, well-optimized queries, and encapsulating reusable logic in stored procedures — keeping the data layer performant and maintainable.
+
+## Core capabilities
+
+<Columns cols={2}>
+  <Card title="Relational database design" icon="database">
+    Designing normalized schemas with proper primary keys, foreign keys, and constraints to reflect real-world business rules accurately.
+  </Card>
+  <Card title="Query optimization" icon="bolt">
+    Writing and tuning T-SQL queries using indexes, execution plans, and set-based logic to minimize I/O and reduce query time.
+  </Card>
+  <Card title="Stored procedures" icon="code">
+    Encapsulating complex data logic in stored procedures to improve reuse, reduce round-trips, and enforce business rules at the database level.
+  </Card>
+  <Card title="Data modeling" icon="diagram-project">
+    Creating entity-relationship diagrams and translating business requirements into well-structured table schemas.
+  </Card>
+</Columns>
+
+## Example: stored procedure with optimized query
+
+The following shows a typical pattern for a parameterized stored procedure that retrieves paginated order data with a status filter.
+
+```sql GetOrdersByStatus.sql
+CREATE PROCEDURE dbo.GetOrdersByStatus
+    @Status      NVARCHAR(50),
+    @PageNumber  INT = 1,
+    @PageSize    INT = 20
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        o.OrderId,
+        o.CreatedAt,
+        o.TotalAmount,
+        o.Status,
+        c.FullName   AS CustomerName,
+        c.Email      AS CustomerEmail
+    FROM dbo.Orders AS o
+    INNER JOIN dbo.Customers AS c
+        ON c.CustomerId = o.CustomerId
+    WHERE o.Status = @Status
+    ORDER BY o.CreatedAt DESC
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END;
+```
+
+<Tip>
+  Creating a composite index on `(Status, CreatedAt DESC)` for the `Orders` table lets SQL Server satisfy both the `WHERE` filter and `ORDER BY` clause in a single index scan, avoiding a costly sort operation.
+</Tip>
+
+## Data modeling approach
+
+Gregori follows these principles when designing schemas:
+
+- **Normalization** — at least third normal form (3NF) to eliminate redundancy and update anomalies
+- **Referential integrity** — foreign key constraints enforced at the database level, not only in application code
+- **Indexing strategy** — clustered indexes on primary keys, non-clustered indexes on frequently filtered and joined columns
+- **Naming conventions** — consistent, descriptive names for tables, columns, and procedures that make the schema self-documenting
+
+<Note>
+  Stored procedures also provide a security boundary — callers can be granted `EXECUTE` permission on a procedure without having direct `SELECT` or `UPDATE` access to the underlying tables.
+</Note>

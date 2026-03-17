@@ -1,0 +1,55 @@
+---
+title: "Introduction"
+description: "Welcome to the documentation for Gregori Evangelista Jimenez's developer portfolio — a single-page interactive web application built with HTML, CSS, and JavaScript."
+---
+
+## About this portfolio
+
+This site is the personal developer portfolio of **Gregori Evangelista Jimenez**, a software developer specializing in the Microsoft ecosystem. The portfolio is a fully self-contained single-page application (SPA) with no external framework dependencies — just clean HTML, CSS, and vanilla JavaScript.
+
+<CardGroup cols={2}>
+  <Card title="About me" icon="user" href="/about">
+    Learn about Gregori's background, skills, and professional focus.
+  </Card>
+  <Card title="Skills & Stack" icon="code" href="/skills/csharp-dotnet">
+    Explore the core technologies: C# .NET, SQL Server, and JavaScript.
+  </Card>
+  <Card title="Projects" icon="folder-open" href="/projects/overview">
+    Browse the projects section and learn how to add your own.
+  </Card>
+  <Card title="Contact" icon="envelope" href="/contact">
+    Get in touch via email or LinkedIn.
+  </Card>
+</CardGroup>
+
+## What this portfolio does
+
+The portfolio is a single HTML file (`index.html`) that includes:
+
+- A **hero section** with a terminal animation showing the developer's tech stack at a glance
+- An **about section** with dynamic project counters
+- A **skills section** with animated progress bars for C# .NET (98%), SQL Server (95%), and JavaScript (90%)
+- A **projects section** where visitors can dynamically add project cards — persisted in memory during the session
+- A **contact section** with direct email and LinkedIn links
+- A **dark/light theme toggle** that persists user preference via `localStorage`
+
+## Key technical highlights
+
+<CardGroup cols={2}>
+  <Card title="Zero dependencies" icon="ban">
+    No npm, no build tools. Open `index.html` directly in any browser.
+  </Card>
+  <Card title="Responsive design" icon="mobile">
+    Fully responsive layout using CSS Grid and media queries.
+  </Card>
+  <Card title="IntersectionObserver" icon="eye">
+    Scroll-triggered animations and skill bar fills using the browser-native API.
+  </Card>
+  <Card title="localStorage persistence" icon="database">
+    Theme preference saved across browser sessions automatically.
+  </Card>
+</CardGroup>
+
+## Developer guide
+
+If you want to customize or extend this portfolio, head to the [Developer Guide](/dev/getting-started) tab for setup instructions, theming options, and feature breakdowns.

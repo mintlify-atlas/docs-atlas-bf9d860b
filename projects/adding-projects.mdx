@@ -1,0 +1,133 @@
+---
+title: "Adding projects"
+description: "Use the built-in modal form to add project cards to your portfolio."
+---
+
+Project cards are added through a modal form. The form collects the project's title, description, technologies, category, and an optional URL, then renders a new card in the grid.
+
+## How to add a project
+
+<Steps>
+  <Step title="Open the modal">
+    Click the **+ Añadir proyecto** button in the top-right of the projects section header. This calls `openModal()`, which adds the `open` class to the modal overlay.
+
+    ```javascript
+    function openModal() {
+      document.getElementById('modal').classList.add('open');
+    }
+    ```
+
+    You can also close the modal by clicking outside it or pressing the `✕` button, which calls `closeModal()`.
+  </Step>
+
+  <Step title="Fill in the form fields">
+    The form contains the following fields:
+
+    | Field | ID | Required | Notes |
+    |---|---|---|---|
+    | Title | `p-title` | Yes | Name of the project |
+    | Description | `p-desc` | Yes | What the project does |
+    | Technologies | `p-tags` | No | Comma-separated, e.g. `C#, SQL Server, JavaScript` |
+    | Category | `p-cat` | No | Select: `backend`, `frontend`, or `fullstack` |
+    | URL | `p-url` | No | Full URL, e.g. `https://github.com/tu-proyecto` |
+  </Step>
+
+  <Step title="Save the project">
+    Click **Guardar proyecto →** to call `addProject()`. If validation passes, the card is appended to the grid and the modal closes.
+  </Step>
+</Steps>
+
+## Validation
+
+Before creating a card, `addProject()` checks that both required fields are filled:
+
+```javascript
+if (!title || !desc) {
+  alert('El título y la descripción son obligatorios.');
+  return;
+}
+```
+
+If either field is empty, a browser alert is shown and the function returns early without saving.
+
+## The `addProject()` function
+
+Below is the full function extracted from `index.html`:
+
+```javascript
+function addProject() {
+  const title   = document.getElementById('p-title').value.trim();
+  const desc    = document.getElementById('p-desc').value.trim();
+  const tagsRaw = document.getElementById('p-tags').value.trim();
+  const cat     = document.getElementById('p-cat').value;
+  const url     = document.getElementById('p-url').value.trim();
+
+  if (!title || !desc) {
+    alert('El título y la descripción son obligatorios.');
+    return;
+  }
+
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  const num  = projects.length + 1;
+
+  const empty = document.getElementById('empty-state');
+  if (empty) empty.style.display = 'none';
+
+  const card = document.createElement('div');
+  card.className = 'project-card fade-in';
+  card.dataset.category = cat;
+  card.innerHTML =
+    '<div class="project-number">// ' + String(num).padStart(2, '0') + '</div>' +
+    '<div class="project-title">' + esc(title) + '</div>' +
+    '<div class="project-desc">' + esc(desc) + '</div>' +
+    (tags.length
+      ? '<div class="project-tags">' +
+          tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') +
+        '</div>'
+      : '') +
+    (url
+      ? '<div class="project-links"><a href="' + esc(url) +
+          '" class="project-link" target="_blank" rel="noopener">Ver proyecto &rarr;</a></div>'
+      : '');
+
+  document.getElementById('projects-grid').appendChild(card);
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => card.classList.add('visible'))
+  );
+
+  projects.push({ title, desc, tags, cat, url });
+  updateCounter();
+  ['p-title', 'p-desc', 'p-tags', 'p-url'].forEach(
+    id => (document.getElementById(id).value = '')
+  );
+  closeModal();
+}
+```
+
+After saving, the function:
+
+1. Hides the empty-state placeholder.
+2. Creates a `div.project-card` element and sets `data-category` to the selected category.
+3. Appends the card to `#projects-grid`.
+4. Uses `requestAnimationFrame` twice to trigger the CSS fade-in transition.
+5. Pushes the project object into the `projects` array.
+6. Calls `updateCounter()` to refresh the project count displayed in the About section.
+7. Clears all text inputs and closes the modal.
+
+## The `esc()` helper
+
+All user-supplied strings are passed through `esc()` before being written into `innerHTML`. This prevents XSS by escaping the four most dangerous HTML characters:
+
+```javascript
+function esc(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+```
+
+<Tip>
+Technology tags are split on commas and each token is trimmed, so `C#, SQL Server , JavaScript` and `C#,SQL Server,JavaScript` both produce the same three tags.
+</Tip>

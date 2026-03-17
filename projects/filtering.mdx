@@ -1,0 +1,73 @@
+---
+title: "Filtering projects"
+description: "Filter the project grid by category using the built-in filter tabs."
+---
+
+The projects section includes four filter buttons that show or hide cards based on their category. Filtering is purely client-side and takes effect immediately on click.
+
+## Filter buttons
+
+The filter bar is rendered above the project grid:
+
+```html
+<div class="filter-tabs">
+  <button class="filter-btn active" data-filter="all">Todos</button>
+  <button class="filter-btn" data-filter="backend">Backend</button>
+  <button class="filter-btn" data-filter="frontend">Frontend</button>
+  <button class="filter-btn" data-filter="fullstack">Full Stack</button>
+</div>
+```
+
+| Button label | `data-filter` value | Behavior |
+|---|---|---|
+| Todos | `all` | Shows all project cards |
+| Backend | `backend` | Shows only cards with `data-category="backend"` |
+| Frontend | `frontend` | Shows only cards with `data-category="frontend"` |
+| Full Stack | `fullstack` | Shows only cards with `data-category="fullstack"` |
+
+The **Todos** button is active by default.
+
+## How filtering works
+
+Each project card has a `data-category` attribute set to the category chosen when the project was added:
+
+```javascript
+card.dataset.category = cat; // 'backend' | 'frontend' | 'fullstack'
+```
+
+When a filter button is clicked, the event listener:
+
+1. Removes the `active` class from all filter buttons.
+2. Adds the `active` class to the clicked button.
+3. Reads the button's `data-filter` value.
+4. Iterates every `.project-card` in the DOM and sets `display` to `''` (visible) or `'none'` (hidden) based on whether the card's `data-category` matches the filter.
+
+Here is the full filter code from `index.html`:
+
+```javascript
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b =>
+      b.classList.remove('active')
+    );
+    btn.classList.add('active');
+
+    const filter = btn.dataset.filter;
+
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.style.display =
+        (filter === 'all' || card.dataset.category === filter)
+          ? ''
+          : 'none';
+    });
+  });
+});
+```
+
+## Filtering newly added projects
+
+When `addProject()` saves a new card, it sets `card.dataset.category` to the value from the category `<select>` before appending the card to the grid. This means the card is immediately filterable — clicking any filter button after adding a project will correctly show or hide the new card without any extra setup.
+
+<Note>
+Filtering operates on live DOM nodes. If you reload the page, the `projects` array resets and all cards are cleared, so filter state resets to **Todos** as well.
+</Note>

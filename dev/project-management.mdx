@@ -1,0 +1,132 @@
+---
+title: "Project management"
+description: "How the dynamic project card system works — adding, rendering, and filtering projects."
+---
+
+Projects are managed entirely in the browser. A JavaScript array holds the project data in memory, and the DOM is updated directly when a project is added. There is no backend or persistence layer.
+
+<Note>
+  Projects are session-only. Refreshing or closing the browser tab clears all added projects. The project count in the stats grid resets to `0` on reload.
+</Note>
+
+## Data model
+
+Each project is stored as a plain object in the `projects` array:
+
+```javascript
+// { title, desc, tags, cat, url }
+let projects = [];
+```
+
+| Field   | Type     | Required | Description                                      |
+| ------- | -------- | -------- | ------------------------------------------------ |
+| `title` | string   | Yes      | Project name.                                    |
+| `desc`  | string   | Yes      | Short description of what the project does.      |
+| `tags`  | string[] | No       | Technology tags, parsed from a comma-separated input. |
+| `cat`   | string   | Yes      | Category: `backend`, `frontend`, or `fullstack`. |
+| `url`   | string   | No       | Optional link to the live project or repository. |
+
+## User flow
+
+<Steps>
+  <Step title="Open the modal">
+    Click the **+ Añadir proyecto** button. This calls `openModal()`, which adds the `open` class to the overlay element, making it visible.
+
+    ```javascript
+    function openModal() { document.getElementById('modal').classList.add('open'); }
+    ```
+  </Step>
+  <Step title="Fill in the form">
+    Enter a title and description (required). Optionally add comma-separated technology tags, select a category, and paste a project URL.
+  </Step>
+  <Step title="Save the project">
+    Click **Guardar proyecto**. This calls `addProject()`, which validates the inputs, builds the card HTML, appends it to the grid, updates the project counter, resets the form fields, and closes the modal.
+  </Step>
+  <Step title="Filter by category">
+    Click one of the filter buttons (`Todos`, `Backend`, `Frontend`, `Full Stack`). Cards with a non-matching `data-category` attribute are hidden with `display: none`.
+  </Step>
+</Steps>
+
+## The `addProject()` function
+
+```javascript
+function addProject() {
+  const title = document.getElementById('p-title').value.trim();
+  const desc  = document.getElementById('p-desc').value.trim();
+  const tagsRaw = document.getElementById('p-tags').value.trim();
+  const cat   = document.getElementById('p-cat').value;
+  const url   = document.getElementById('p-url').value.trim();
+
+  if (!title || !desc) { alert('El título y la descripción son obligatorios.'); return; }
+
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  const num  = projects.length + 1;
+
+  const empty = document.getElementById('empty-state');
+  if (empty) empty.style.display = 'none';
+
+  const card = document.createElement('div');
+  card.className = 'project-card fade-in';
+  card.dataset.category = cat;
+  card.innerHTML =
+    '<div class="project-number">// ' + String(num).padStart(2,'0') + '</div>' +
+    '<div class="project-title">' + esc(title) + '</div>' +
+    '<div class="project-desc">' + esc(desc) + '</div>' +
+    (tags.length ? '<div class="project-tags">' + tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>' : '') +
+    (url ? '<div class="project-links"><a href="' + esc(url) + '" class="project-link" target="_blank" rel="noopener">Ver proyecto &rarr;</a></div>' : '');
+
+  document.getElementById('projects-grid').appendChild(card);
+  requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('visible')));
+
+  projects.push({ title, desc, tags, cat, url });
+  updateCounter();
+  ['p-title','p-desc','p-tags','p-url'].forEach(id => document.getElementById(id).value = '');
+  closeModal();
+}
+```
+
+The double `requestAnimationFrame` ensures the card is in the DOM before the `visible` class is applied, which triggers the fade-in CSS transition.
+
+## The `esc()` helper
+
+All user-supplied strings are sanitized before being inserted as HTML. `esc()` replaces the four characters that could break out of an HTML context:
+
+```javascript
+function esc(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+```
+
+This prevents stored XSS by ensuring user input is treated as text, not markup.
+
+## Generated card structure
+
+Each call to `addProject()` produces a card with this structure (optional sections are only emitted when the data is present):
+
+```html
+<div class="project-card fade-in" data-category="[cat]">
+  <div class="project-number">// 01</div>
+  <div class="project-title">[title]</div>
+  <div class="project-desc">[desc]</div>
+  <!-- only when tags are provided -->
+  <div class="project-tags">
+    <span class="tag">[tag]</span>
+  </div>
+  <!-- only when a URL is provided -->
+  <div class="project-links">
+    <a href="[url]" class="project-link" target="_blank" rel="noopener">Ver proyecto &rarr;</a>
+  </div>
+</div>
+```
+
+## The `updateCounter()` function
+
+After each project is pushed to the array, the stat card in the About section is refreshed:
+
+```javascript
+function updateCounter() {
+  document.getElementById('proj-count').textContent = projects.length;
+}
+```
+
+The target element is the `#proj-count` span inside the stats grid.
